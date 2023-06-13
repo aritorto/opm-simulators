@@ -30,15 +30,10 @@
 
 #include <opm/grid/common/CartesianIndexMapper.hpp>
 #include <opm/grid/LookUpData.hh>
+//#include <opm/grid/LookUpDataCpGrid.hh>
+
 
 #include <vector>
-
-namespace Dune {
-
-template <class Grid>
-class LookUpData;
-
-}
 
 namespace Opm {
 
@@ -102,7 +97,7 @@ protected:
     const CartesianIndexMapper& cartMapper_;
     const GridView& gridView_;
     const ElementMapper& elementMapper_;
-    // const LookUpData& lookupdata_;
+    LookUpData lookupdata_;
     const EclipseState& eclState_;
     std::vector<Scalar> thpresDefault_;
     std::vector<Scalar> thpres_;

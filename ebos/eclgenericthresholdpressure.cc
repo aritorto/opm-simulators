@@ -33,6 +33,8 @@
 #include <dune/grid/common/mcmgmapper.hh>
 
 #include <opm/grid/CpGrid.hpp>
+//#include <opm/grid/LookUpData.hh>
+//#include <opm/grid/LookUpDataCpGrid.hh>
 #include <opm/grid/polyhedralgrid.hh>
 #if HAVE_DUNE_ALUGRID
 #include <dune/alugrid/grid.hh>
@@ -60,11 +62,12 @@ EclGenericThresholdPressure(const CartesianIndexMapper& cartMapper,
                             const GridView& gridView,
                             const ElementMapper& elementMapper,
                             const EclipseState& eclState)
-    : lookupdata_.cartMapper_(cartMapper)
-    , lookupdata_.gridView_(gridView)
-    , lookupdata_.elemMapper_(elementMapper)
+    : cartMapper_(cartMapper)
+    , gridView_(gridView)
+    , elementMapper_(elementMapper)
+    , lookupdata_(gridView, elementMapper, cartMapper)
     , eclState_(eclState)
-{
+{  
 }
 
 template<class Grid, class GridView, class ElementMapper,class Scalar>
@@ -76,8 +79,8 @@ thresholdPressure(int elem1Idx, int elem2Idx) const
 
     // threshold pressure accross faults
     if (!thpresftValues_.empty()) {
-        int cartElem1Idx = lookupdata_.cartMapper_.cartesianIndex(elem1Idx);
-        int cartElem2Idx = lookupdata_.cartMapper_.cartesianIndex(elem2Idx);
+        int cartElem1Idx = lookupdata_.cartesianIndex(elem1Idx); //cartMapper_.cartesianIndex(elem1Idx);
+        int cartElem2Idx = lookupdata_.cartesianIndex(elem2Idx); //cartMapper_.cartesianIndex(elem2Idx);
 
         assert(0 <= cartElem1Idx && static_cast<int>(cartElemFaultIdx_.size()) > cartElem1Idx);
         assert(0 <= cartElem2Idx && static_cast<int>(cartElemFaultIdx_.size()) > cartElem2Idx);
@@ -111,7 +114,7 @@ template<class Grid, class GridView, class ElementMapper, class Scalar>
 void EclGenericThresholdPressure<Grid,GridView,ElementMapper,Scalar>::
 finishInit()
 {
-    unsigned numElements = lookupdata_.gridView_.size(/*codim=*/0);
+    unsigned numElements = gridView_.size(/*codim=*/0);
 
     const auto& simConfig = eclState_.getSimulationConfig();
 
@@ -156,8 +159,8 @@ applyExplicitThresholdPressures_()
 
     // set the threshold pressures for all EQUIL region boundaries which have a
     // intersection in the grid
-    for (const auto& elem : elements(lookupdata_.gridView_, Dune::Partitions::interior)) {
-        for (const auto& intersection : intersections(lookupdata_.gridView_, elem)) {
+    for (const auto& elem : elements(gridView_, Dune::Partitions::interior)) {
+        for (const auto& intersection : intersections(gridView_, elem)) {
             if (intersection.boundary())
                 continue; // ignore boundary intersections for now (TODO?)
             else if (!intersection.neighbor()) //processor boundary but not domain boundary
@@ -166,11 +169,11 @@ applyExplicitThresholdPressures_()
             const auto& inside = intersection.inside();
             const auto& outside = intersection.outside();
 
-            unsigned insideElemIdx = lookupdata_.elemMapper_.index(inside);
-            unsigned outsideElemIdx = lookupdata_.elemMapper_.index(outside);
+            //unsigned insideElemIdx = LookUpData::operator()(inside); //lookupdata_.elemMapper_.index(inside);
+            // unsigned outsideElemIdx = LookUpData::operator()(outside);//lookupdata_.elemMapper_.index(outside);
 
-            unsigned equilRegionInside = elemEquilRegion_[insideElemIdx];
-            unsigned equilRegionOutside = elemEquilRegion_[outsideElemIdx];
+            unsigned equilRegionInside = LookUpData::operator()(inside, elemEquilRegion_); //elemEquilRegion_[insideElemIdx];
+            unsigned equilRegionOutside = LookUpData::operator()(outside, elemEquilRegion_); //elemEquilRegion_[outsideElemIdx];
             if (thpres.hasRegionBarrier(equilRegionInside + 1, equilRegionOutside + 1)) {
                 Scalar pth = 0.0;
                 if (thpres.hasThresholdPressure(equilRegionInside + 1, equilRegionOutside + 1)) {
