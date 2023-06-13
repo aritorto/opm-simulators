@@ -33,6 +33,7 @@
 #include <dune/grid/common/mcmgmapper.hh>
 
 #include <opm/grid/CpGrid.hpp>
+#include <opm/grid/LookUpData.hh>
 #include <opm/grid/polyhedralgrid.hh>
 #if HAVE_DUNE_ALUGRID
 #include <dune/alugrid/grid.hh>
@@ -60,9 +61,9 @@ EclGenericThresholdPressure(const CartesianIndexMapper& cartMapper,
                             const GridView& gridView,
                             const ElementMapper& elementMapper,
                             const EclipseState& eclState)
-    : cartMapper_(cartMapper)
-    , gridView_(gridView)
-    , elementMapper_(elementMapper)
+    : lookupdata_.cartMapper_(cartMapper)
+    , lookupdata_.gridView_(gridView)
+    , lookupdata_.elemMapper_(elementMapper)
     , eclState_(eclState)
 {
 }
@@ -76,8 +77,8 @@ thresholdPressure(int elem1Idx, int elem2Idx) const
 
     // threshold pressure accross faults
     if (!thpresftValues_.empty()) {
-        int cartElem1Idx = cartMapper_.cartesianIndex(elem1Idx);
-        int cartElem2Idx = cartMapper_.cartesianIndex(elem2Idx);
+        int cartElem1Idx = lookupdata_.cartMapper_.cartesianIndex(elem1Idx);
+        int cartElem2Idx = lookupdata_.cartMapper_.cartesianIndex(elem2Idx);
 
         assert(0 <= cartElem1Idx && static_cast<int>(cartElemFaultIdx_.size()) > cartElem1Idx);
         assert(0 <= cartElem2Idx && static_cast<int>(cartElemFaultIdx_.size()) > cartElem2Idx);
@@ -156,7 +157,7 @@ applyExplicitThresholdPressures_()
 
     // set the threshold pressures for all EQUIL region boundaries which have a
     // intersection in the grid
-    for (const auto& elem : elements(gridView_, Dune::Partitions::interior)) {
+    for (const auto& elem : elements(lookupdata_.gridView_, Dune::Partitions::interior)) {
         for (const auto& intersection : intersections(gridView_, elem)) {
             if (intersection.boundary())
                 continue; // ignore boundary intersections for now (TODO?)
@@ -166,8 +167,8 @@ applyExplicitThresholdPressures_()
             const auto& inside = intersection.inside();
             const auto& outside = intersection.outside();
 
-            unsigned insideElemIdx = elementMapper_.index(inside);
-            unsigned outsideElemIdx = elementMapper_.index(outside);
+            unsigned insideElemIdx = lookupdata_.elemMapper_.index(inside);
+            unsigned outsideElemIdx = lookupdata_.elemMapper_.index(outside);
 
             unsigned equilRegionInside = elemEquilRegion_[insideElemIdx];
             unsigned equilRegionOutside = elemEquilRegion_[outsideElemIdx];
