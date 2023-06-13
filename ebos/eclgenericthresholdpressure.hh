@@ -29,8 +29,16 @@
 #define EWOMS_ECL_GENERIC_THRESHOLD_PRESSURE_HH
 
 #include <opm/grid/common/CartesianIndexMapper.hpp>
+#include <opm/grid/LookUpData.hh>
 
 #include <vector>
+
+namespace Dune {
+
+template <class Grid>
+class LookUpData;
+
+}
 
 namespace Opm {
 
@@ -40,6 +48,7 @@ template<class Grid, class GridView, class ElementMapper, class Scalar>
 class EclGenericThresholdPressure {
 public:
     using CartesianIndexMapper = Dune::CartesianIndexMapper<Grid>;
+    using LookUpData = Dune::LookUpData<Grid>;
 
     EclGenericThresholdPressure(const CartesianIndexMapper& cartMapper,
                                 const GridView& gridView,
@@ -93,6 +102,7 @@ protected:
     const CartesianIndexMapper& cartMapper_;
     const GridView& gridView_;
     const ElementMapper& elementMapper_;
+    // const LookUpData& lookupdata_;
     const EclipseState& eclState_;
     std::vector<Scalar> thpresDefault_;
     std::vector<Scalar> thpres_;
