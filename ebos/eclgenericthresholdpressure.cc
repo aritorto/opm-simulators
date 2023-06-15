@@ -33,8 +33,6 @@
 #include <dune/grid/common/mcmgmapper.hh>
 
 #include <opm/grid/CpGrid.hpp>
-//#include <opm/grid/LookUpData.hh>
-//#include <opm/grid/LookUpDataCpGrid.hh>
 #include <opm/grid/polyhedralgrid.hh>
 #if HAVE_DUNE_ALUGRID
 #include <dune/alugrid/grid.hh>
@@ -79,14 +77,9 @@ thresholdPressure(int elem1Idx, int elem2Idx) const
 
     // threshold pressure accross faults
     if (!thpresftValues_.empty()) {
-        int cartElem1Idx = lookupdata_.cartesianIndex(elem1Idx); 
-        int cartElem2Idx = lookupdata_.cartesianIndex(elem2Idx); 
 
-        assert(0 <= cartElem1Idx && static_cast<int>(cartElemFaultIdx_.size()) > cartElem1Idx);
-        assert(0 <= cartElem2Idx && static_cast<int>(cartElemFaultIdx_.size()) > cartElem2Idx);
-
-        int fault1Idx = cartElemFaultIdx_[cartElem1Idx];
-        int fault2Idx = cartElemFaultIdx_[cartElem2Idx];
+        int fault1Idx = lookupdata_(elem1Idx, cartElemFaultIdx_); 
+        int fault2Idx = lookupdata_(elem2Idx, cartElemFaultIdx_); 
         if (fault1Idx != -1 && fault1Idx == fault2Idx)
             // inside a fault there's no threshold pressure, even accross EQUIL
             // regions.
@@ -169,8 +162,8 @@ applyExplicitThresholdPressures_()
             const auto& inside = intersection.inside();
             const auto& outside = intersection.outside();
 
-            unsigned equilRegionInside = lookupdata_.operator()(inside, elemEquilRegion_);
-            unsigned equilRegionOutside = lookupdata_.operator()(outside, elemEquilRegion_); 
+            unsigned equilRegionInside = lookupdata_(inside, elemEquilRegion_);
+            unsigned equilRegionOutside = lookupdata_(outside, elemEquilRegion_); 
             if (thpres.hasRegionBarrier(equilRegionInside + 1, equilRegionOutside + 1)) {
                 Scalar pth = 0.0;
                 if (thpres.hasThresholdPressure(equilRegionInside + 1, equilRegionOutside + 1)) {
@@ -299,22 +292,32 @@ logPressures()
 
 #if HAVE_DUNE_FEM
 template class EclGenericThresholdPressure<Dune::CpGrid,
-                                           Dune::GridView<Dune::Fem::GridPart2GridViewTraits<Dune::Fem::AdaptiveLeafGridPart<Dune::CpGrid, Dune::PartitionIteratorType(4), false>>>,
-                                           Dune::MultipleCodimMultipleGeomTypeMapper<Dune::GridView<Dune::Fem::GridPart2GridViewTraits<Dune::Fem::AdaptiveLeafGridPart<Dune::CpGrid, Dune::PartitionIteratorType(4), false>>>>,
+                                           Dune::GridView<
+                                               Dune::Fem::GridPart2GridViewTraits<
+                                                   Dune::Fem::AdaptiveLeafGridPart<
+                                                       Dune::CpGrid,
+                                                       Dune::PartitionIteratorType(4),
+                                                       false>>>,
+                                           Dune::MultipleCodimMultipleGeomTypeMapper<
+                                               Dune::GridView<
+                                                   Dune::Fem::GridPart2GridViewTraits<
+                                                       Dune::Fem::AdaptiveLeafGridPart<
+                                                           Dune::CpGrid,
+                                                           Dune::PartitionIteratorType(4),
+                                                           false>>>>,
                                            double>;
 template class EclGenericThresholdPressure<Dune::CpGrid,
-                                            Dune::Fem::GridPart2GridViewImpl<
-                                                Dune::Fem::AdaptiveLeafGridPart<
-                                                    Dune::CpGrid,
-                                                    Dune::PartitionIteratorType(4),
-                                                    false> >,
-                                            Dune::MultipleCodimMultipleGeomTypeMapper<
-                                                Dune::Fem::GridPart2GridViewImpl<
-                                                    Dune::Fem::AdaptiveLeafGridPart<
-                                                        Dune::CpGrid,
-                                                        Dune::PartitionIteratorType(4),
-                                                        false>>>,
-                                            double>;
+                                           Dune::Fem::GridPart2GridViewImpl<Dune::Fem::AdaptiveLeafGridPart<
+                                                   Dune::CpGrid,
+                                                   Dune::PartitionIteratorType(4),
+                                                   false> >,
+                                           Dune::MultipleCodimMultipleGeomTypeMapper<
+                                               Dune::Fem::GridPart2GridViewImpl<
+                                                   Dune::Fem::AdaptiveLeafGridPart<
+                                                       Dune::CpGrid,
+                                                       Dune::PartitionIteratorType(4),
+                                                       false>>>,
+                                           double>;
 #if HAVE_DUNE_ALUGRID
 #if HAVE_MPI
     using ALUGrid3CN = Dune::ALUGrid<3, 3, Dune::cube, Dune::nonconforming, Dune::ALUGridMPIComm>;
@@ -323,8 +326,19 @@ template class EclGenericThresholdPressure<Dune::CpGrid,
 #endif //HAVE_MPI
 
 template class EclGenericThresholdPressure<ALUGrid3CN,
-                                           Dune::GridView<Dune::Fem::GridPart2GridViewTraits<Dune::Fem::AdaptiveLeafGridPart<ALUGrid3CN, Dune::PartitionIteratorType(4), false>>>,
-                                           Dune::MultipleCodimMultipleGeomTypeMapper<Dune::GridView<Dune::Fem::GridPart2GridViewTraits<Dune::Fem::AdaptiveLeafGridPart<ALUGrid3CN, Dune::PartitionIteratorType(4), false>>>>,
+                                           Dune::GridView<
+                                               Dune::Fem::GridPart2GridViewTraits<
+                                                   Dune::Fem::AdaptiveLeafGridPart<
+                                                       ALUGrid3CN,
+                                                       Dune::PartitionIteratorType(4),
+                                                       false>>>,
+                                           Dune::MultipleCodimMultipleGeomTypeMapper<
+                                               Dune::GridView<
+                                                   Dune::Fem::GridPart2GridViewTraits<
+                                                       Dune::Fem::AdaptiveLeafGridPart<
+                                                           ALUGrid3CN,
+                                                           Dune::PartitionIteratorType(4),
+                                                           false>>>>,
                                            double>;
 template class EclGenericThresholdPressure<ALUGrid3CN,
                                             Dune::Fem::GridPart2GridViewImpl<
@@ -338,15 +352,16 @@ template class EclGenericThresholdPressure<ALUGrid3CN,
                                                         ALUGrid3CN,
                                                         Dune::PartitionIteratorType(4),
                                                         false>>>,
-                                            double>;                                           
-                                           
-                                           
+                                            double>;
+
+
 
 #endif //HAVE_DUNE_ALUGRID
 #else
 template class EclGenericThresholdPressure<Dune::CpGrid,
                                            Dune::GridView<Dune::DefaultLeafGridViewTraits<Dune::CpGrid>>,
-                                           Dune::MultipleCodimMultipleGeomTypeMapper<Dune::GridView<Dune::DefaultLeafGridViewTraits<Dune::CpGrid>>>,
+                                           Dune::MultipleCodimMultipleGeomTypeMapper<
+                                               Dune::GridView<Dune::DefaultLeafGridViewTraits<Dune::CpGrid>>>,
                                            double>;
 #if HAVE_DUNE_ALUGRID
 
@@ -357,7 +372,9 @@ template class EclGenericThresholdPressure<Dune::CpGrid,
 #endif //HAVE_MPI
 template class EclGenericThresholdPressure<ALUGrid3CN,
                                            Dune::GridView<Dune::ALU3dLeafGridViewTraits<const ALUGrid3CN,Dune::PartitionIteratorType(4)>>,
-                                           Dune::MultipleCodimMultipleGeomTypeMapper<Dune::GridView<Dune::ALU3dLeafGridViewTraits<const ALUGrid3CN,Dune::PartitionIteratorType(4)>>>,
+                                           Dune::MultipleCodimMultipleGeomTypeMapper<
+                                               Dune::GridView<
+                                                   Dune::ALU3dLeafGridViewTraits<const ALUGrid3CN,Dune::PartitionIteratorType(4)>>>,
                                            double>;
 #endif //HAVE_DUNE_ALUGRID
 
@@ -365,7 +382,8 @@ template class EclGenericThresholdPressure<ALUGrid3CN,
 
 template class EclGenericThresholdPressure<Dune::PolyhedralGrid<3,3,double>,
                                            Dune::GridView<Dune::PolyhedralGridViewTraits<3,3,double,Dune::PartitionIteratorType(4)>>,
-                                           Dune::MultipleCodimMultipleGeomTypeMapper<Dune::GridView<Dune::PolyhedralGridViewTraits<3,3,double,Dune::PartitionIteratorType(4)>>>,
+                                           Dune::MultipleCodimMultipleGeomTypeMapper<
+                                               Dune::GridView<Dune::PolyhedralGridViewTraits<3,3,double,Dune::PartitionIteratorType(4)>>>,
                                            double>;
 
 } // namespace Opm

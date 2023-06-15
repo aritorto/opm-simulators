@@ -30,7 +30,6 @@
 
 #include <opm/grid/common/CartesianIndexMapper.hpp>
 #include <opm/grid/LookUpData.hh>
-//#include <opm/grid/LookUpDataCpGrid.hh>
 
 
 #include <vector>
