@@ -79,8 +79,8 @@ thresholdPressure(int elem1Idx, int elem2Idx) const
 
     // threshold pressure accross faults
     if (!thpresftValues_.empty()) {
-        int cartElem1Idx = lookupdata_.cartesianIndex(elem1Idx); //cartMapper_.cartesianIndex(elem1Idx);
-        int cartElem2Idx = lookupdata_.cartesianIndex(elem2Idx); //cartMapper_.cartesianIndex(elem2Idx);
+        int cartElem1Idx = lookupdata_.cartesianIndex(elem1Idx); 
+        int cartElem2Idx = lookupdata_.cartesianIndex(elem2Idx); 
 
         assert(0 <= cartElem1Idx && static_cast<int>(cartElemFaultIdx_.size()) > cartElem1Idx);
         assert(0 <= cartElem2Idx && static_cast<int>(cartElemFaultIdx_.size()) > cartElem2Idx);
@@ -169,13 +169,8 @@ applyExplicitThresholdPressures_()
             const auto& inside = intersection.inside();
             const auto& outside = intersection.outside();
 
-            // unsigned insideElemIdx = lookupdata_.operator()(inside); //lookupdata_.elemMapper_.index(inside);
-            // unsigned outsideElemIdx = lookupdata_.operator()(outside);//lookupdata_.elemMapper_.index(outside);
-
-            unsigned equilRegionInside = lookupdata_.operator()(inside, elemEquilRegion_); //
-                // elemEquilRegion_[insideElemIdx];
-            unsigned equilRegionOutside = lookupdata_.operator()(outside, elemEquilRegion_); //
-                // elemEquilRegion_[outsideElemIdx];
+            unsigned equilRegionInside = lookupdata_.operator()(inside, elemEquilRegion_);
+            unsigned equilRegionOutside = lookupdata_.operator()(outside, elemEquilRegion_); 
             if (thpres.hasRegionBarrier(equilRegionInside + 1, equilRegionOutside + 1)) {
                 Scalar pth = 0.0;
                 if (thpres.hasThresholdPressure(equilRegionInside + 1, equilRegionOutside + 1)) {
