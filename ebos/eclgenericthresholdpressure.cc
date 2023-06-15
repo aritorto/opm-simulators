@@ -169,13 +169,13 @@ applyExplicitThresholdPressures_()
             const auto& inside = intersection.inside();
             const auto& outside = intersection.outside();
 
-            unsigned insideElemIdx = lookupdata_.operator()(inside); //lookupdata_.elemMapper_.index(inside);
-            unsigned outsideElemIdx = lookupdata_.operator()(outside);//lookupdata_.elemMapper_.index(outside);
+            // unsigned insideElemIdx = lookupdata_.operator()(inside); //lookupdata_.elemMapper_.index(inside);
+            // unsigned outsideElemIdx = lookupdata_.operator()(outside);//lookupdata_.elemMapper_.index(outside);
 
-            unsigned equilRegionInside =// LookUpData::operator()(inside, elemEquilRegion_); //
-            elemEquilRegion_[insideElemIdx];
-            unsigned equilRegionOutside = //LookUpData::operator()(outside, elemEquilRegion_); //
-            elemEquilRegion_[outsideElemIdx];
+            unsigned equilRegionInside = lookupdata_.operator()(inside, elemEquilRegion_); //
+                // elemEquilRegion_[insideElemIdx];
+            unsigned equilRegionOutside = lookupdata_.operator()(outside, elemEquilRegion_); //
+                // elemEquilRegion_[outsideElemIdx];
             if (thpres.hasRegionBarrier(equilRegionInside + 1, equilRegionOutside + 1)) {
                 Scalar pth = 0.0;
                 if (thpres.hasThresholdPressure(equilRegionInside + 1, equilRegionOutside + 1)) {
