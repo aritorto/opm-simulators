@@ -169,8 +169,8 @@ applyExplicitThresholdPressures_()
             const auto& inside = intersection.inside();
             const auto& outside = intersection.outside();
 
-            unsigned insideElemIdx = LookUpData::operator()(inside); //lookupdata_.elemMapper_.index(inside);
-            unsigned outsideElemIdx = LookUpData::operator()(outside);//lookupdata_.elemMapper_.index(outside);
+            unsigned insideElemIdx = lookupdata_.operator()(inside); //lookupdata_.elemMapper_.index(inside);
+            unsigned outsideElemIdx = lookupdata_.operator()(outside);//lookupdata_.elemMapper_.index(outside);
 
             unsigned equilRegionInside =// LookUpData::operator()(inside, elemEquilRegion_); //
             elemEquilRegion_[insideElemIdx];
