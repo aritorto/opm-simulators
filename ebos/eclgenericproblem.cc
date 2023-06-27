@@ -58,6 +58,7 @@
 #include <limits>
 #include <stdexcept>
 #include <iostream>
+#include <type_traits>
 
 namespace Opm {
 
@@ -374,7 +375,8 @@ updateNum(const std::string& name, std::vector<T>& numbers)
 
     unsigned numElems = gridView_.size(/*codim=*/0);
     numbers.resize(numElems);
-    Dune::LookUpData lookupdata = Dune::LookUpData<decltype(gridView_.grid()),GridView>(gridView_);
+    //using decay_t = typename std::decay<decltype(gridView_.grid())>::type;
+    Dune::LookUpData lookupdata = Dune::LookUpData<std::decay_t<decltype(gridView_.grid())>::type,GridView>(gridView_);
     for (unsigned elemIdx = 0; elemIdx < numElems; ++elemIdx) {
         //numbers[elemIdx] = static_cast<T>(numData[elemIdx]) - 1;
         numbers[elemIdx] = static_cast<T>(numData[lookupdata.getOriginIndex(elemIdx)]) - 1;
