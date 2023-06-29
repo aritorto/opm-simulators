@@ -63,7 +63,7 @@ EclGenericThresholdPressure(const CartesianIndexMapper& cartMapper,
     : cartMapper_(cartMapper)
     , gridView_(gridView)
     , elementMapper_(elementMapper)
-    , lookupdata_(gridView, elementMapper, cartMapper)
+    , lookupdata_(gridView)
     , eclState_(eclState)
 {  
 }
