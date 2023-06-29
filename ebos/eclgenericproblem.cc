@@ -379,7 +379,6 @@ updateNum(const std::string& name, std::vector<T>& numbers)
     using GridNoRefNoConstType = typename std::remove_cv<GridNoReferenceType>::type;
     Dune::LookUpData lookupdata = Dune::LookUpData<GridNoRefNoConstType, GridView>(gridView_.grid());
     for (unsigned elemIdx = 0; elemIdx < numElems; ++elemIdx) {
-        //numbers[elemIdx] = static_cast<T>(numData[elemIdx]) - 1;
         numbers[elemIdx] = static_cast<T>(numData[lookupdata.getOriginIndex(elemIdx)]) - 1;
     }
 }
