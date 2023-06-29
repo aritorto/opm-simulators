@@ -42,7 +42,7 @@ template<class Grid, class GridView, class ElementMapper, class Scalar>
 class EclGenericThresholdPressure {
 public:
     using CartesianIndexMapper = Dune::CartesianIndexMapper<Grid>;
-    using LookUpData = Dune::LookUpData<Grid>; //,GridView, ElementMapper>;
+    using LookUpData = Dune::LookUpData<Grid,GridView>; //,GridView, ElementMapper>;
 
     EclGenericThresholdPressure(const CartesianIndexMapper& cartMapper,
                                 const GridView& gridView,
