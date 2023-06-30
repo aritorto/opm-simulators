@@ -55,7 +55,7 @@ addConnection(const Cell& source,
     }
 
     if (! source.isInterior ||
-        (source.cartesianIndex > destination.cartesianIndex))
+        (source.activeIndex > destination.activeIndex))
     {
         // Connection handled in different call.  Don't double-count
         // contributions.
