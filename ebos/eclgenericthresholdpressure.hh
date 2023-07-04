@@ -96,7 +96,7 @@ protected:
     const CartesianIndexMapper& cartMapper_;
     const GridView& gridView_;
     const ElementMapper& elementMapper_;
-    const LookUpData& lookupdata_;
+    const LookUpData lookupdata_;
     const EclipseState& eclState_;
     std::vector<Scalar> thpresDefault_;
     std::vector<Scalar> thpres_;
