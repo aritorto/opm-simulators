@@ -488,6 +488,7 @@ protected:
                                  centroids.begin() + (elemIdx + 1) * dimensionworld,
                                  centroid.begin());
                    }
+                   std::cout << "Centroid: " << centroid[0] << " " << centroid[1] << " " << centroid[2] << '\n';
                    return centroid;
                };
     }
