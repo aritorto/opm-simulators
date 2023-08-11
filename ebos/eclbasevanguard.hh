@@ -47,6 +47,7 @@
 #include <optional>
 #include <unordered_map>
 #include <vector>
+#include <iomanip> // to use setprecision
 
 namespace Opm {
 template <class TypeTag>
@@ -488,7 +489,11 @@ protected:
                                  centroids.begin() + (elemIdx + 1) * dimensionworld,
                                  centroid.begin());
                    }
+
+                   auto old = std::cout.precision();
+                   std::cout << std::setprecision(10);
                    std::cout << "CentroidFromLambda: " << centroid[0] << " " << centroid[1] << " " << centroid[2] << '\n';
+                   std::cout << std::setprecision(old);
                    return centroid;
                };
     }
