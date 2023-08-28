@@ -31,6 +31,7 @@
 
 #include <opm/grid/common/GridEnums.hpp>
 #include <opm/grid/common/CartesianIndexMapper.hpp>
+#include <opm/grid/LookUpCellCentroid.hh>
 
 #include <opm/input/eclipse/EclipseState/Aquifer/NumericalAquifer/NumericalAquiferCell.hpp>
 #include <opm/input/eclipse/EclipseState/EclipseState.hpp>
@@ -479,22 +480,32 @@ protected:
         return [this, cartMapper](int elemIdx) {
                    const auto& centroids = this->centroids_;
                    auto rank = this->gridView().comm().rank();
-                   std::array<double,dimensionworld> centroid;
+                   std::array<double,dimensionworld> centroid; // = lookUpCellCentroid(elemIdx);
+                   std::array<double,3> centroid2;
                    if (rank == 0) {
                        unsigned cartesianCellIdx = cartMapper.cartesianIndex(elemIdx);
-                       centroid = this->eclState().getInputGrid().getCellCenter(cartesianCellIdx);
+                       centroid =  this->eclState().getInputGrid().getCellCenter(cartesianCellIdx);
+
+                       // Additional computation
+                       LookUpCellCentroid<Grid,GridView> lookUpCellCentroid(this->gridView(),
+                                                                            cartMapper,
+                                                                            &(this ->eclState().getInputGrid()));
+                       centroid2 = lookUpCellCentroid(elemIdx);
                    } else
                    {
                        std::copy(centroids.begin() + elemIdx * dimensionworld,
                                  centroids.begin() + (elemIdx + 1) * dimensionworld,
                                  centroid.begin());
+                       LookUpCellCentroid<Grid,GridView> lookUpCellCentroid(this->gridView(), cartMapper, nullptr);
+                       centroid2 = lookUpCellCentroid(elemIdx);
                    }
 
                    auto old = std::cout.precision();
                    std::cout << std::setprecision(10);
                    std::cout << "CentroidFromLambda: " << centroid[0] << " " << centroid[1] << " " << centroid[2] << '\n';
+                   std::cout << "CentroidFromLookUp: " << centroid2[0] << " " << centroid2[1] << " " << centroid2[2] << '\n';
                    std::cout << std::setprecision(old);
-                   return centroid;
+                   return centroid; 
                };
     }
 
