@@ -505,7 +505,7 @@ protected:
                    std::cout << "CentroidFromLambda: " << centroid[0] << " " << centroid[1] << " " << centroid[2] << '\n';
                    std::cout << "CentroidFromLookUp: " << centroid2[0] << " " << centroid2[1] << " " << centroid2[2] << '\n';
                    std::cout << std::setprecision(old);
-                   return centroid; 
+                   return centroid2; 
                };
     }
 
