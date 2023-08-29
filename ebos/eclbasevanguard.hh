@@ -486,32 +486,32 @@ protected:
                    std::array<double,3> centroid2;
                    if (rank == 0) {
                        unsigned cartesianCellIdx = cartMapper.cartesianIndex(elemIdx);
-                       centroid2 =  this->eclState().getInputGrid().getCellCenter(cartesianCellIdx);
+                       centroid =  this->eclState().getInputGrid().getCellCenter(cartesianCellIdx);
 
                        // Additional computation
                        LookUpCellCentroid<Grid,GridView> lookUpCellCentroid(this->gridView(),
                                                                             cartMapper,
                                                                             &(this ->eclState().getInputGrid()));
-                       centroid = lookUpCellCentroid(elemIdx);
+                       centroid2 = lookUpCellCentroid(elemIdx);
                         auto old = std::cout.precision();
                    std::cout << std::setprecision(10);
-                   std::cout << "CentroidFromLambda: " << centroid2[0] << " " << centroid2[1] << " " << centroid2[2] << '\n';
-                   std::cout << "CentroidFromLookUpRankZero: " << centroid[0] << " " << centroid[1] << " " << centroid[2] << '\n';
+                   std::cout << "CentroidFromLambda: " << centroid[0] << " " << centroid[1] << " " << centroid[2] << '\n';
+                   std::cout << "CentroidFromLookUpRankZero: " << centroid2[0] << " " << centroid2[1] << " " << centroid2[2] << '\n';
                    std::cout << std::setprecision(old);
                    } else
                    {
                        std::copy(centroids.begin() + elemIdx * dimensionworld,
                                  centroids.begin() + (elemIdx + 1) * dimensionworld,
-                                 centroid.begin());
+                                 centroid2.begin());
                        LookUpCellCentroid<Grid,GridView> lookUpCellCentroid(this->gridView(), cartMapper, nullptr);
-                       centroid2 = lookUpCellCentroid(elemIdx);
+                       centroid = lookUpCellCentroid(elemIdx);
                        assert(centroid[0] == centroid2[0]);
                        assert(centroid[1] == centroid2[1]);
                        assert(centroid[2] == centroid2[2]);
                         auto old = std::cout.precision();
                    std::cout << std::setprecision(10);
-                   std::cout << "CentroidFromLambda: " << centroid[0] << " " << centroid[1] << " " << centroid[2] << '\n';
-                   std::cout << "CentroidFromLookUp: " << centroid2[0] << " " << centroid2[1] << " " << centroid2[2] << '\n';
+                   std::cout << "CentroidFromLambda: " << centroid2[0] << " " << centroid2[1] << " " << centroid2[2] << '\n';
+                   std::cout << "CentroidFromLookUp: " << centroid[0] << " " << centroid[1] << " " << centroid[2] << '\n';
                    std::cout << std::setprecision(old);
                        
                    }
