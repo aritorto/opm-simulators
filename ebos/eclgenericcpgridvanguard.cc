@@ -430,10 +430,10 @@ void EclGenericCpGridVanguard<ElementMapper,GridView,Scalar>::createCpGridWithLg
     lgrName_vec.reserve(lgrsSize);
     for (int lgr = 0; lgr < lgrsSize; ++lgr)
     {
-        cells_per_dim_vec.emplace_back(lgrCarfin.NX(), lgrCarfin.NY(), lgrCarfin.NZ());
-        startIJK_vec.emplace_back(lgrCarfin.I1() - 1, lgrCarfin.J1() - 1, lgrCarfin.K1() - 1);
-        endIJK_vec.emplace_back(lgrCarfin.I2() -1, lgrCarfin.J2() - 1, lgrCarfin.K2() -1);
         const auto lgrCarfin = lgrCollection.getLgr(lgr);
+        cells_per_dim_vec.push_back({lgrCarfin.NX(), lgrCarfin.NY(), lgrCarfin.NZ()});
+        startIJK_vec.push_back({lgrCarfin.I1() - 1, lgrCarfin.J1() - 1, lgrCarfin.K1() - 1});
+        endIJK_vec.push_back({lgrCarfin.I2() -1, lgrCarfin.J2() - 1, lgrCarfin.K2() -1});
         lgrName_vec.emplace_back(lgrCarfin.NAME());
 
     }
