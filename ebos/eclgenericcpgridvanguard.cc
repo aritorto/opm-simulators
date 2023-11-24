@@ -420,9 +420,6 @@ void EclGenericCpGridVanguard<ElementMapper,GridView,Scalar>::doCreateGrids_(Ecl
 template<class ElementMapper, class GridView, class Scalar>
 void EclGenericCpGridVanguard<ElementMapper,GridView,Scalar>::createCpGridWithLgrs(const LgrCollection& lgrCollection, const int lgrsSize)
 {
-    const auto& lgrOrderedMap = lgrCollection.getOrderedMap();
-    const auto& lgrCollectionIndex = lgrOrderedMap.getIndex();
-    const auto& lgrCollectionStorage = lgrOrderedMap.getStorage();
     std::vector<std::array<int,3>> cells_per_dim_vec;
     std::vector<std::array<int,3>> startIJK_vec;
     std::vector<std::array<int,3>> endIJK_vec;
@@ -433,10 +430,10 @@ void EclGenericCpGridVanguard<ElementMapper,GridView,Scalar>::createCpGridWithLg
     lgrName_vec.reserve(lgrsSize);
     for (int lgr = 0; lgr < lgrsSize; ++lgr)
     {
-        const auto lgrCarfin = lgrCollectionStorage[lgr].second();
         cells_per_dim_vec.emplace_back(lgrCarfin.NX(), lgrCarfin.NY(), lgrCarfin.NZ());
         startIJK_vec.emplace_back(lgrCarfin.I1() - 1, lgrCarfin.J1() - 1, lgrCarfin.K1() - 1);
         endIJK_vec.emplace_back(lgrCarfin.I2() -1, lgrCarfin.J2() - 1, lgrCarfin.K2() -1);
+        const auto lgrCarfin = lgrCollection.getLgr(lgr);
         lgrName_vec.emplace_back(lgrCarfin.NAME());
 
     }
