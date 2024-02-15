@@ -26,7 +26,6 @@
  */
 #ifndef OPM_GENERIC_CPGRID_VANGUARD_HPP
 #define OPM_GENERIC_CPGRID_VANGUARD_HPP
-#include <opm/input/eclipse/EclipseState/Grid/LgrCollection.hpp>
 
 #include <opm/grid/CpGrid.hpp>
 
@@ -46,6 +45,7 @@ namespace Opm {
     class Schedule;
     class Well;
     class ParallelEclipseState;
+    class LgrCollection;
 }
 
 namespace Opm {
@@ -194,7 +194,7 @@ protected:
     void allocCartMapper();
 
     void doCreateGrids_(EclipseState& eclState);
-    void createCpGridWithLgrs(const LgrCollection& lgrCollection, const int lgrsSize);
+    void addLgrsUpdateLeafView(const LgrCollection& lgrCollection, const int lgrsSize);
 
     virtual void allocTrans() = 0;
     virtual double getTransmissibility(unsigned I, unsigned J) const = 0;
