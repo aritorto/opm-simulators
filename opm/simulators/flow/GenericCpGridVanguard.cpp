@@ -418,6 +418,7 @@ void GenericCpGridVanguard<ElementMapper,GridView,Scalar>::doCreateGrids_(Eclips
     // If there are lgrs, create the grid with them, and update the leaf grid view.
     if (lgrsSize)
     {
+        OpmLog::info("\nAdding LGRs to the grid and updating its leaf grid view");
         this->addLgrsUpdateLeafView(lgrs, lgrsSize);
     }
 
