@@ -671,9 +671,7 @@ public:
         const auto& grid =  this->simulator().vanguard().gridView().grid();
         using GridType =  std::remove_cv_t< typename std::remove_reference<decltype(grid)>::type>;
         bool isCpGrid = std::is_same_v<GridType, Dune::CpGrid>;
-        if ( isCpGrid && (this->simulator().vanguard().gridView().grid().maxLevel()>0)) {
-        }
-        else {
+        if ( !isCpGrid || (this->simulator().vanguard().gridView().grid().maxLevel()==0)) {
             eclWriter_->evalSummaryState(isSubStep);
         }
 
