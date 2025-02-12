@@ -182,6 +182,7 @@ public:
         }
         checkParallelException("Could not distribute the vanguard data: ",
                                exceptionThrown, what);
+        
 
         if (verbose_)
             std::cout << "Allocating the model\n" << std::flush;
@@ -216,6 +217,20 @@ public:
         }
         checkParallelException("Could not initialize the  model: ",
                                exceptionThrown, what);
+
+
+        // Only relevant for CpGrid
+        if (verbose_)
+            std::cout << "Adding LGRs, if any\n" << std::flush;
+
+        try
+        { vanguard_->addLgrs(); }
+        catch (const std::exception& e) {
+            catchAction(e, verbose_);
+        }
+        checkParallelException("Adding LGRs to the simulation vanguard failed: ",
+                               exceptionThrown, what);
+
 
         if (verbose_)
             std::cout << "Initializing the problem\n" << std::flush;
